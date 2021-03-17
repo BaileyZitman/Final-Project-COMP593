@@ -1,9 +1,8 @@
 # History
 
-This file contains a detailed summary about each session I worked on the project. Each and everytime work was completed on this project the changes and activities was logged to this file in order to keep an accurate activity summary. 
+This file contains a detailed summary about each session I worked on the project. Each and everytime work was completed on this project the changes and activities was logged to this file in order to keep an accurate activity summary. Each entry (number in the list) represents a different session. For each session the date is provided, the amount of time logged for that session is provided and a description of the activities completed/worked on is provided. 
 
-Note: The date is in the format YYYY-MM-DD
+**Note:** Date is presented in the format YYYY-MM-DD
+**Note:** Time Logged is measured to the quarter hour and expressed in hours
 
-| **Session Number** | **Date of Session** | **Session Hours** | **Session Notes** |
-| :-- | --- | :-: |
-| 1 | 2021- 03 - 17 | 1 | The assignment was assigned today and to get prepared I started by creating a new repository called "Final- Project-COMP593". I also downloaded Github Broswer and configured Github to be paired with VSCode (my default editor) using a token to enable working on the repo from my host computer. I created this History file next. It uses markdown formatting and arranges everything into a pretty table | 
+1. **Date:** 2021- 03 - 17 **Time Logged:** 1 **Description** The assignment was assigned today and to get prepared I started by creating a new repository called "Final- Project-COMP593". I also downloaded Github Broswer and configured Github to be paired with VSCode (my default editor) using a token to enable working on the repo from my host computer. This alows me to push and merge changes made on my local machine to the repository. I also created this History file which will serve as a work log throughout the project. It uses markdown formatting and i first attempted to create a table but the formatting was accoplishing the desired outcome. This was identified in my first test commit (to see if i could merge and if the formatting was desirable) and as such I have update the formatting of the "History.md" to not be formatted into a table but a list. The inportant headers are shown in **bold** text. 
