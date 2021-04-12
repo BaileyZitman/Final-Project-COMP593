@@ -12,8 +12,3 @@ This database will contain one table (for simplicity) and contain the following 
 4. Filesize of Image
 5. SHA-256 Hash of Image
 6. The URL
-7. The HD-URL
-8. Copyright information
-9. Title of Image
-10. Description of Image
-
