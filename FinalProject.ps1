@@ -22,31 +22,29 @@ if (Get-InstalledModule -Name "PSSQLite"){ #installs the reqiured module if not 
     Install-Module -Name PSSQLite -Force -Scope CurrentUser 
     Write-Output "The modile PSSQLite is required to run this script and has been downloaded automatically" 
 } 
-
 Function locate_file_w_hash{ #used to compare the hash values of the images in the directory ./Saved Images/ to the hash value of the latest image. 
-    Get-ChildItem ".\Saved Images\" |
     #get the hash value for each file in the directory .\Saved Images
-     ForEach-Object { 
-         $hash = Get-FileHash ".\Saved Images\$_" | Format-List -Property Hash | Out-String
-         $hash_converted = $hash -Replace " Hash : ", "" #ensures same format as other hash to compare properly
-         $hash_final = $hash_converted | ConvertFrom-String
-         $status = "!="
-         while ($status = "!="){
-           $status = compare_hashes -Database_hash $connection_results -File_hash $hash.p4   
-         }  
-     }
-     return $status
+    $images = Get-ChildItem ".\Saved Images\*" #sets inital value which will be removed before function is returned
+    $status = @{dummy = "!"}
+    foreach ($file in $images){ 
+        $hash = Get-FileHash $file | Format-List -Property Hash | Out-String
+        $hash_converted = $hash -Replace " Hash : ", "" #ensures same format as other hash to compare properly
+        $hash_final = $hash_converted | ConvertFrom-String
+        $status[$file] = compare_hashes -Database_hash $connection_results -File_hash $hash_final.p4    
+    }
+    $status.Remove("dummy") #removed initalization value
+    return $status
 }
 
 Function Connection_and_query{
     #the next few lines connects to the database and makes a query for TODAYS hash value. 
-    $date = Get-Date -Format "yyyy/MM/dd" | Out-String
-    $date = $date.Replace("/", "-") #gets the date of the current date for the query
+    $date = Get-Date -Format "yyyy/MM/dd" #gets the date of the current date for the query
+    #$date = $date.Replace("/", "-")  #orignaily had to replace "/" with "-" but now it automatically does it and commented out this line but kept just in case.
     $data_base = New-SQLiteConnection -Datasource "PBMZ-db-FP.sqlite"
-    $date = "2021-04-11"
+    #$date = "2018-04-23"
     $query = 'SELECT "SHA-256 Hash" FROM "Astronomy Image of The Day" WHERE "Date Image was Obtained" = "' + $date + '"'
-    $connection_results = Invoke-SqliteQuery -SQLiteConnection $data_base -Query $query
-    return $connection_results."SHA-256 Hash"
+    $connection_results = Invoke-SqliteQuery -SQLiteConnection $data_base -Query $query #preform ths actually query
+    return $connection_results."SHA-256 Hash" 
 }
 
 Function compare_hashes {
@@ -54,26 +52,25 @@ Function compare_hashes {
         [Object] $Database_hash,
         [Object] $File_hash
     )
-
-    if ($Database_hash -Match "[/d/w]"){
-    Write-Output $Database_hash
-    Write-Output $File_hash
-
-        if ($File_hash-eq $Database_hash){
-            Write-Output "The Image is already located in the Directory ./Saved Images and that file will be used instead of obtaining a new image and information"
-            return "="
-        } else {
-            Write-Output "The Astronomy Image of the Day is not located in ./Saved Images already and as a result the script will commense fetching procedure"
-            return "!="   
-        }
-
+    #Write-Output $Database_hash
+    #Write-Output $File_hash
+    if ($File_hash-eq $Database_hash){
+        return "="  #indicates the hashes compared ARE equal
     } else {
-        Write-Output "There is no entry in the database for the current day and therefore the image could not possibly be downloaded by this script already."
+        return "!"  #indicates the hashes compared are NOT equal
+    }     
 }
 
+$connection_results = Connection_and_query
+if ($connection_results){ #if connection results suceeeded
+    $status = locate_file_w_hash
+ 
+    if ($status.ContainsValue('=')){
+        Write-Output "The image of the day is already available in the directory ./Saved Images. This image file will be used instead of obtaining the same image again"
+    } else {
+        Write-Output "The image of the day has not already been obtained via this script. As a result, the image will now be obtained"
+    }
+} else {
+    Write-Output "There is no entry in the database for this day  or the database doesnt exist and that indcates the image cannot exist in ./Saved Images"
 }
-
-$connection_results = Connection_and_query 
-$status = locate_file_w_hash
-Write-Output $status
 

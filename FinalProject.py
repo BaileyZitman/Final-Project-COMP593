@@ -34,7 +34,7 @@ import hashlib #used to get the images hash value to save to the database
 
 def Connection_and_json():
     connection = client.HTTPSConnection('api.nasa.gov', 443) #connection to BASE URL and type
-    connection.request('GET', '/planetary/apod?api_key=sjs4hKLE3bgesXYphayaDhYNfuLVIJfNUOqC0Z6H&date=2020-01-22')
+    connection.request('GET', '/planetary/apod?api_key=sjs4hKLE3bgesXYphayaDhYNfuLVIJfNUOqC0Z6H')
     response = connection.getresponse()
     json_image = response.read().decode()
     json_image = json.loads(json_image)
