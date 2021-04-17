@@ -122,7 +122,7 @@ if command_for_script == "1": #if a new entry is to be made and a new image is t
 
         keys = parse_json(json) #gets the keys returned in the object
         Copyright = 'No Copyright' #for public images
-        output.append(str(keys))
+        #output.append(str(keys))
         if (re.findall('copyright', str(keys))): #if the copyright key is found in the returned keys, add it. 
             Copyright = json["copyright"] #for copyrighted images, good idea to include. 
         

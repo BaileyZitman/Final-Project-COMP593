@@ -1,14 +1,18 @@
 #*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*
 # Description:
 #  This script will allow the user to change the background image of the computer to Nasa's Astronomy Image of the Day. This script works in conjuction with the script
-#  "FinalProject.py" to complete the objective. This script will automatically start the python script if the image available for today is already downloaded. Note: 
+#  "FinalProject.py" to complete the objective and is called by the RunAPODPBMZ.ps1 script. This script will automatically start the python script if the image available for today is not already downloaded. Note: 
 #  the images for THIS script must be located in the directory called ".\Saved Images" to work properly. This script will create the directory and search that directory
 #  for the images that are already downloaded. If the image is not found containing the hash in question the python script will activate and obtain the image. The Image
 #  data will be saved to a database called "PBMZ-db_FP.db" which will also be created in the CWD when the python script is FIRST run. On subsequent runs, the data will be
-#  appended to database instead.
+#  appended to database instead. Note: This script uses command line parameters because it is automatically configure to run everyday at a specific time. 
 #
 # Usage
-#  . .\FinalProject.ps1 
+#  . .\FinalProject.ps1 directorytosearch
+#
+# Parameters
+#  directorytosearch = This is the parameter to specify which additional directory to search (max 1). Enter the full path of the directory to search recursilvly, 
+#                      or enter "default" to search ./Saved Images twice (only outputs the path once though so not duplicating output)
 #
 #  For a detailed summary on functionality and usability please visit the "README.md" file in the main Github repository
 #
@@ -33,10 +37,10 @@ Function Connection_and_query{
     return $connection_results."SHA-256 Hash"
 }
 
-Function Change_background ([string]$image){
-    remove-itemproperty -path "HKCU:Control Panel\Desktop" -name Wallpaper
-    set-itemproperty -path "HKCU:Control Panel\Desktop" -name Wallpaper -value $image
-    for ($i = 0 ; $i -le 20; $i++ ){
+Function Change_background ([string]$image){ #changes background of host computer to that of returned path
+    remove-itemproperty -path "HKCU:Control Panel\Desktop" -name Wallpaper #removes the old wallpaper forst
+    set-itemproperty -path "HKCU:Control Panel\Desktop" -name Wallpaper -value $image #set the new value in the registry to the path of the $image
+    for ($i = 0 ; $i -le 35; $i++ ){ #sets a loop to ensure the background is chnages without reboot, doesnt work everytime so put in a loop of 35 times to ensure it changes
         RUNDLL32.EXE USER32.DLL,UpdatePerUserSystemParameters 1, True
     }
     $return_statement = "The background image of the computer was changed to: $image" 
@@ -98,4 +102,5 @@ if (Test-Path -Path "./PBMZ-db-FP.sqlite"){ #test to make sure database exists
     }
 } else { #if database doesnt exists run python script to retrieve todays image and download the image
     Write-Output (FilePath_to_Background -state "1" -OutputStatement 2)
-} 
+}
+Read-Host -Prompt "Enter Any Key to Exit" 
