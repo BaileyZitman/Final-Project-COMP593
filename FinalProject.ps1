@@ -23,62 +23,63 @@
 if (Get-InstalledModule -Name "PSSQLite"){ #installs the reqiured module if not already installed.
     Import-Module PSSQLite
 } else {
-    Install-Module -Name PSSQLite -Force -Scope CurrentUser 
+    Install-Module -Name PSSQLite -Force -Scope CurrentUser #used to query the database from powershell, also do queries in python but if dont need to run python script
     Write-Output "The modile PSSQLite is required to run this script and has been downloaded automatically" 
 }
 Function Connection_and_query{
     #the next few lines connects to the database and makes a query for TODAYS hash value. 
-    $date = Get-Date -Format "yyyy/MM/dd"
+    $date = Get-Date -Format "yyyy/MM/dd" #gets current date
     #$date = $date.Replace("/", "-") #originally needed to replace for formatting but not neccessary. just in case left in
-    $data_base = New-SQLiteConnection -Datasource "PBMZ-db-FP.sqlite"
+    $data_base = New-SQLiteConnection -Datasource "PBMZ-db-FP.sqlite" #states the location of connection-not connection itself
     #$date = "2021-04-15" #used to test other dates than current one
-    $query = 'SELECT "SHA-256 Hash" FROM "Astronomy Image of The Day" WHERE "Date Image was Obtained" = "' + $date + '"'
-    $connection_results = Invoke-SqliteQuery -SQLiteConnection $data_base -Query $query #makes query to database
-    return $connection_results."SHA-256 Hash"
+    $query = 'SELECT "SHA-256 Hash" FROM "Astronomy Image of The Day" WHERE "Date Image was Obtained" = "' + $date + '"' #query for connection, getting todays hash if available
+    $connection_results = Invoke-SqliteQuery -SQLiteConnection $data_base -Query $query #makes query to database and the actual connection and response
+    return $connection_results."SHA-256 Hash" #output only the hash, none of the nonsense
 }
 
 Function Change_background ([string]$image){ #changes background of host computer to that of returned path
     remove-itemproperty -path "HKCU:Control Panel\Desktop" -name Wallpaper #removes the old wallpaper forst
     set-itemproperty -path "HKCU:Control Panel\Desktop" -name Wallpaper -value $image #set the new value in the registry to the path of the $image
     for ($i = 0 ; $i -le 35; $i++ ){ #sets a loop to ensure the background is chnages without reboot, doesnt work everytime so put in a loop of 35 times to ensure it changes
-        RUNDLL32.EXE USER32.DLL,UpdatePerUserSystemParameters 1, True
+        RUNDLL32.EXE USER32.DLL,UpdatePerUserSystemParameters 1, True # used to set the variable to true
     }
     $return_statement = "The background image of the computer was changed to: $image" 
     return $return_statement
 }
 
-Function FilePath_to_Background ([string]$State, [string]$OutputStatement){
+Function FilePath_to_Background ([string]$State, [string]$OutputStatement){ #used to take the filepath and call the python script and then use that output to call the call the change background function about and chnage the background
+    #Below assigns the statements to an array for easy access base on when this function is called will output something different
     $statements = ("No file matching the hash was found. Will start the FinalProject.py Script to obtain the image because it has not already been downloaded.", "No entry for this day can be found in the database. Will commence obtaining the image and create a new entry", "The directory './PBMZ-db-FP.sqlite' does not exist yet so will commense creation now and obtain the image of the day.")
     Write-Host $statements[$OutputStatement]
-    $Path = $(python .\FinalProject.py $State)
+    $Path = $(python .\FinalProject.py $State) #call the python script
     if (Test-Path "./temp.txt"){ #if the file exists read content, output it and then delete it. 
-        $python_output = Get-Content -Path "./temp.txt"
-        $python_out1 = $python_output -replace "'\]", ""
+        $python_output = Get-Content -Path "./temp.txt" #read contents
+        $python_out1 = $python_output -replace "'\]", "" #the next four lines reformat the txt the nice output, need new variables bc.....powershell is weird?!?!
         $python_out2 = $python_out1 -replace "\['", ""
         $python_out3 = $python_out2 -replace "', '", " "
-        Write-Host $python_out3
-        Remove-Item -Path "./temp.txt"
+        Write-Host $python_out3 #write the outout of the python script to the screen
+        Remove-Item -Path "./temp.txt" #delet the file that contained the temp above info
     }
 
     #Write-Output $Path #for testing
-    $File_location = Get-ItemProperty FullName -Path $Path
-    Write-Host The File $File_location.FullName "was retrieved from the python script and will be used to change the background image"
-    $change_background = Change_background -image $File_location.FullName
-    return $change_background
+    $File_location = Get-ItemProperty FullName -Path $Path #take the half-@$$ string "./Saved Images/oshdbc...blah" to the full string for the background changer
+    Write-Host The File $File_location.FullName "was retrieved from the python script and will be used to change the background image" #write the returned path as if python did all the work
+    $change_background = Change_background -image $File_location.FullName #call function to change background to path returned
+    return $change_background #return the output of the background changer
 }
 
-$directory_to_search = $Args[0]
+$directory_to_search = $Args[0] #directory to search
 
-if (-Not (Test-Path -Path "./Saved Images")){ #checks to see if ./Saved Images exists if not create
-    $create_directory = New-Item -Path "./" -Name "Saved Images" -ItemType "directory" #assigned to variable so output is not produced.
-} 
+#if (-Not (Test-Path -Path "./Saved Images")){ #checks to see if ./Saved Images exists if not create
+#   $create_directory = New-Item -Path "./" -Name "Saved Images" -ItemType "directory" #assigned to variable so output is not produced.
+#} 
 
-if ($directory_to_search -eq "default"){ #if user doesnt wanna speficify second directory scan the defailt one twice but omit output because they will be same
+if ($directory_to_search -eq "default"){ #if user doesnt wanna speficify second directory scan the default one twice but omit output because they will be same
     $directory_to_search = ".\Saved Images"
 }
 
-if (Test-Path -Path "./PBMZ-db-FP.sqlite"){ #test to make sure database exists
-    $connection_results = Connection_and_query
+if (Test-Path -Path "./PBMZ-db-FP.sqlite"){ #test to make sure database exists, if it does continue
+    $connection_results = Connection_and_query #get the hash of the current day
     if ($connection_results){ #if connection returns a hash continue else no database/entry for current date
         $find_hash = Get-ChildItem ".\Saved Images" -Recurse | Get-FileHash | Where-object -Property Hash -e -Value $connection_results #search the ./Saved Images directory for a file with the same has a returned
         $find_hash_second_directory = Get-ChildItem $directory_to_search -Recurse | Get-FileHash | Where-object -Property Hash -e -Value $connection_results #same as above but on user defined directory. if default was provided then on ./Saved Images
@@ -88,8 +89,8 @@ if (Test-Path -Path "./PBMZ-db-FP.sqlite"){ #test to make sure database exists
             } else {
                 Write-Host "The file(s):" $find_hash.Path $find_hash_second_directory.Path were located that contain the same hash as the current image of the day and will use one of the files instead #write-host doesnt add a \n automatically when not using quotes
             }
-            if ($find_hash){
-                $change_background = Change_background -image $find_hash.Path
+            if ($find_hash){ #if file that was found is in the default folder use that first, because mine script rules....jk...but it does
+                $change_background = Change_background -image $find_hash.Path #change background base on image found in todays directory instead of calling the python script becasue it is already downlaoded
             } else {
                 $change_background = Change_background -image $find_hash_second_directory.Path
             }

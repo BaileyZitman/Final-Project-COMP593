@@ -20,17 +20,17 @@ Write-Host "Enter an additional Directory to search for images in addition to th
 Write-Host ". For example, if the Downloads folder should be searched for images as well as the default directory, enter: " -ForegroundColor "Green" -NoNewline ; Write-Host "C:\Users\baile\Downloads" -ForegroundColor "Yellow" -NoNewline
 Write-Host ". Note: If you only want to search the default directory, enter: " -ForegroundColor "Green" -NoNewline; Write-Host "default" -ForegroundColor "Yellow"
 
-Function Create_task ([String]$Occurrence, [String]$Directory, [String]$Time){
-    $current_Directory = pwd
-    $action = New-ScheduledTaskAction -Execute "C:\Windows\WinSxS\amd64_microsoft-windows-powershell-exe_31bf3856ad364e35_10.0.19041.546_none_470f45b46101edfb\powershell.exe" -Argument ". .\FinalProject.ps1 $Directory" -WorkingDirectory $current_Directory.Path
+Function Create_task ([String]$Occurrence, [String]$Directory, [String]$Time){  #will create the task 
+    $current_Directory = Get-Location #gets current directory of this script so we know which directory to start the powershell session in ;)
+    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument ". .\FinalProject.ps1 $Directory" -WorkingDirectory $current_Directory.Path #this is the actuon that is preformed when the trigger happens.
     if ($Occurrence -eq "Once"){ #because cannot convert string to automation object, need to do this
-        $trigger = New-ScheduledTaskTrigger -Once -At $Time #run once
+        $trigger = New-ScheduledTaskTrigger -Once -At $Time #run once, this is the trigger
     } else {
-        $trigger = New-ScheduledTaskTrigger -Daily -At $Time #run daily
+        $trigger = New-ScheduledTaskTrigger -Daily -At $Time #run daily, this is the trigger
     }
-    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
-    $register = Register-ScheduledTask -TaskName "PBMZ Background Changer" -Action $action -Trigger $trigger -Settings $settings
-    return "The Task was created succesfully. 'PBMZ Background Changer' will run $Occurrence at $Time"
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries #applies settings, 
+    $register = Register-ScheduledTask -TaskName "PBMZ Background Changer" -Action $action -Trigger $trigger -Settings $settings #create the task with the action, trigger and settings configured. assigned to unused variable to not get output
+    return "The Task was created succesfully. 'PBMZ Background Changer' will run $Occurrence at $Time" #output this to the original terminal this was run. 
 }
 
 $Setting_configuration_one = "yes"
@@ -38,12 +38,12 @@ while ($Setting_configuration_one -eq "yes"){ #ensures a correct entry is entere
     $additional_directory = Read-Host "Enter the additional directory to search"
     if (($additional_directory -match "^default$") -or (Test-Path $additional_directory)){ #if default was entered or a valid directory continue
         $Setting_configuration_one = "no"
-    } else {
+    } else { #bad entry, print error and present option again until valid
         Write-Host "Error: The directory entered is not valid, enter the directory again or enter 'default' instead" -ForegroundColor "Red"
     }
 }
 Write-Host "Occurrence Configuration:" -ForegroundColor "Cyan"
-$Timing_Options  = ("Once", "Daily", "Now")
+$Timing_Options  = ("Once", "Daily", "Now") #available options 
 Write-Host "This configuration setting allows you to select how often the script will run. The options available are: " -ForegroundColor "Green" -NoNewline; Write-Host $Timing_Options -ForegroundColor "Yellow"
 $Setting_configuration_two = "yes"
 while ($Setting_configuration_two -eq "yes"){ #ensures a correct entry is entered
@@ -62,7 +62,7 @@ if (-not($Occurrence -eq "Now")){ #only need to get time if not Now
     Write-Host " Example: To run the script at 6:00 in the morning enter: " -ForegroundColor "Green" -NoNewline ; Write-Host "6:00AM" -ForegroundColor "Yellow" -NoNewline; Write-Host ". Note: The ':' is mandatory" -ForegroundColor "Green"
     while ($Setting_configuration_three -eq "yes"){ #checks to make sure enter value is accepted
         $Run_Time = Read-Host "Enter the time you wish to run the script"
-        if ($Run_Time -match "^[1-9][12]?:[0-5][0-9] ?[PA]M$"){
+        if ($Run_Time -match "^[1-9][12]?:[0-5][0-9] ?[PA]M$"){ #used to make sure valid entry
             $Setting_configuration_three = "no"
         } else {
             Write-Host "Error: The Time entered is not in the correct format. Please enter a new time." -ForegroundColor "Red" 
@@ -70,12 +70,9 @@ if (-not($Occurrence -eq "Now")){ #only need to get time if not Now
     }
 }
 if ($Occurrence -eq "Now"){ #run the script from here without making a task for it. 
-    $current_Directory = pwd
-    Start-Process -FilePath "Powershell.exe" -ArgumentList ". .\FinalProject.ps1 $additional_directory"  -WorkingDirectory $current_Directory
+    $current_Directory = Get-Location 
+    Start-Process -FilePath "Powershell.exe" -ArgumentList ". .\FinalProject.ps1 $additional_directory"  -WorkingDirectory $current_Directory #starts the process in a new terminal
 } else { #else if once but not now 
-    $create_task = Create_task -Time $Run_Time -Occurrence $Occurrence -Directory $additional_directory
+    $create_task = Create_task -Time $Run_Time -Occurrence $Occurrence -Directory $additional_directory #schedule the task based on user input
     Write-Host $create_task -ForegroundColor "Green"
 }
-
-
-
