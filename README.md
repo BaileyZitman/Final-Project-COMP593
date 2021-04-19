@@ -1,14 +1,51 @@
 # Final-Project-COMP593
 This repository will contain the final project for the course 
 
-
 ## Purpose
-The purpose of this script is to change the background image of the PC every day at a predetermined time to that of the astronomy picture of the day obtained through a Nasa API (APOD). The script will also append (or create a database if script has never ran) data and important information pertaining to the image to an sqlite database. This script will automatically activate at a predetermined time everyday and obtain the astronomy image of the day IF and only IF the image has not already been obtained, save to data to the database and then change the background photo of the PC.
+The purpose of this ***application***, is to change the background of the computer to that of the Astronomy Image of the Day provided by NASA and log the information about the returned image to an SQLite database. 
 
-This database will contain one table (for simplicity) and contain the following information: 
+This database will contain one table (for simplicity) called **Astronomy Image of the Day** and contain the following information about each Image returned: 
 1. Date of Image
-2. Time Image was Obtained 
-3. Filename of Image
-4. Filesize of Image
-5. SHA-256 Hash of Image
-6. The URL
+2. Date Image was Obtained
+3. Time Image was Obtained 
+4. Filename of Image
+5. Filesize (Bytes) of Image
+6. SHA-256 Hash of Image
+7. The URL of the Image
+8. The Image Description
+9. Image Copyright Information (if applicable)
+
+## Set-Up
+In order to achieve the objective without any complications please download the entire directory **Final-Project-COMP593** and do not modify the locations of any of the files. The additional directory **./Saved Images** found within is mandatory and should contain an image called **default.jpg**. This file can be replaced with .jpg file by the name of "default.jpg". If the scripts are to be run without the executable file **RunMe.exe**, then ensure the PowerShell session used to start the script **RunAPODPBMZ.ps1**, has a CWD (Current Working directory) of the directory **Final-Project-COMP593**. If that is to much, simply execute the executable file and it will run the script without having to worry about the CWD of the PowerShell session. 
+
+## Functionality
+Included with the ***application*** is an executable file and three serperate scripts, working in tandom to complete the objective. The three scripts are: **RunAPODPBMZ.ps1**, **FinalProject.ps1** and **FinalProject.py**, two being PowerShell scripts and one being a python script. The executable file **RunMe.exe** is a wrapper around **RunAPODPBMZ.ps1** and can be used to achieve full functionality of the scripts without having to enter a PowerShell session to run **RunAPODPBMZ.ps1**. The executable file is not mandatory, but the three remaining scripts are. Each file, completes a seperate objective, and can be effectivly executed individually to acheive just that objective without having to run the entire ***application***. This section provides more detailed information about each script and the executable file. Ensuring the functionality of each script is clear and concise. 
+
+To run the application, Please either run the executable file or run the PowerShell script, **RunAPODPBMZ.ps1** from a PowerShell session that has the current working directory of the same directory containg the script. 
+
+### RunMe.exe
+To run the executable, simply double click on it.
+
+This executable is an easy way to run the entire script without having to enter into any powershell sessions manually. Once executed, this executable starts the **RunAPODPBMZ.ps1** and allows the user to have access to the full functionality of the ***application***. If run by itself, The executable starts the previously mentioned script and from there follows the same functionality of that script. 
+
+
+### RunAPODPBMZ.ps1
+To run this script navigate to it's parent directory and enter: . .\RunAPODPBZ.ps1
+
+This script provides the user the ability to configure how the scripts **FinalProject.ps1** and **FinalProject.py** execute. In order to run both of the previous scripts without command-line parameters, this script needs to be utilized to execute them because this script is the only one (of the three) that doesnt accepts them. The user is able to either run the script **FinalProject.ps1** directly, or configure a task to run the script instead. When selecting to create a new task, the name of the task will be set as "PBMZ Background Changer", with the option to either run the task once or daily. When selecting to create a new task, the user is also required to enter the time the task is to be completed. However, if the user selects the option to execute the scripts immediately, this script will start a new PowerShell session and then execute **FinalProject.ps1** inside of the newly created session. 
+
+When run by itself this script will provide the full functionality of the ***application***. No command line parameters are required to run this script and by following through the prompts either a new task will be created, to run once or daily at a specified time or the **FinalProject.ps1** script will execute in a new PowerShell session. 
+
+### FinalProject.ps1
+To run this script navigate to it's parent directory and enter: . .\FinalProject.ps1 "directorytosearch"
+
+This script provides the main functionality of the ***application*** and once configured will actually complete the background change. This script is used to call the python script, **FInalProject.py** depending on certain circumstances. When this script is called, the first objective it completes is to determine if the database **PBMZ-db-FP.sqlite** exists and if there is an entry in said database for the current day, by making an SQL query request. If there is no database or no entry exists, then this script calls the **FinalProject.py** script to create the database and create an entry for the current day. If there is an entry for the current date, the returned hash value from the SQL request is compared against the directory **./Saved Images** and another directory of the users choose (directorytosearch). If the comparison returns another file containing the same hash, that image is used to change the background image of the computer. If the comparison doesnt reveal another file containing the hash obtain, this script will call the **FinalProject.py** script, but opposed to adding a new entry, it will just redownload the image and use that image to change the background. Whenever this script calls the python script, a relative filepath is returned which is converted into a fullPath, to be used to change the image. This script, will also read, output and then delete a file called **./temp.txt**, that the python script creates. This script completes the background change and the comparison of the hashes currently found in the two searched directories. 
+
+If the script is run by itself, without being invoked by the script **RunAPODPBMZ.ps1** then it must be executed with command line parameters. The command line paramter tells the script which additional directory to search and while it completes succesfully without the parameter, there will be an error if none is provided. The default parameter is "default" but any ***valid*** directory can be entered to search. This script will complete everything as normally, and doesnt need to be invoked by the previously mentioned script to complete the background change properly. When a task is configured to run, it will run this script as this script calls the python script and completes the background change.
+
+### FinalProject.py
+To run this script navigate to it's parent directory and enter: python FinalProject.py "1or2"
+
+This script is invoked by the script **FInalProject.ps1** if there is no entry for the current date, the database doesnt exist, or there is an entry for the current date but the image doesnt exist in the searched directories. When invoked by the PowerShell script, it will be provided with either a 1 or a 2 to indicate the function it is to complete. If a 1 is passed to this script upon execution it indicates that there is no database or entry for the current date. In such a case, this script will make a connection to the NASA API containing the Astronomy Image of The Day and retrieve the image information. This will be appended to the database as a new entry or if the database doesnt exists, will be appended after the database and table are created. On the off chance the Image of the day is actually a video, the last available image (most recent) will be used as the background image for the current day. In the case when there is no database, or previous images to use and it is a video, a default image has been provided instead that will be used until the next available image is obtained. When being invoked and this script is provided with a 2, the PowerShell script indentified an entry for the current date but could not find an image that matches the hash of the image in the entry. In this situation, the python script will make an SQL query on the database for the current dates filepath and url. This will be used to reobtain the image and save it again. Whenever This script is called, a file is created called **./temp.txt** and it contains all of the output of this script. This will be read back to the PowerShell Terminal after this script is completed. This script also outputs the relative filepath of the image its saved back to the PowerShell script to be used as the background image. 
+
+When this script is run by itself, you need to indicate with a 1 or 2, which function you wish to complete. This script is only used to either, create a new database and table with a new entry, append a new entry to the existing database or to redownload the image for the current date. When not being invoked by the PowerShell script **FinalProject.ps1** no background change will complete because that takes place in the PowerShell script. If there is no entry for the current date, or the database and its table doesn't exists already, this script will create them, obtain todays image, save the file, save the information and return the files relative path. If there is already an entry for the current date, when a 1 is provided a unique contstraint error will present itself. If a 2 is passed to the script, when being invoked by itself, the script will preform an SQL query for todays entry. If the database or table doesnt exists already an error will present itself. If there is no entry then nothing is returned and a different error will present itself. However, if there is an entry for the current date, and a 2 is passed to this script, the script will obtain the binary data again and redownload the image. If it already exists nothing happens (overwrites with same info), and if it didnt exist it does now.  

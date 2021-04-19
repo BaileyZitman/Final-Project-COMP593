@@ -1,8 +1,8 @@
 #*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*
 # Description:
 #  This script will be the main script that runs and will be used to configure the FinalProject.ps1 script. This script allows you to specify how you would like the
-#  FinalProject.ps1 and subsequently the FinalProject.py script to run. This allows you to set a task to run: once, daily, weekly or yearly. This script will create the
-#  task based on the time the user configures to run it.
+#  FinalProject.ps1 and subsequently the FinalProject.py script to run. This allows you to set a task to run: once at a specific time and daily at a specific time. 
+#  This script will create the task based on the time the user configures to run it. You can also choose now which will not create a task but directly run FinalProject.ps1
 #
 # Usage
 #  . .\RunAPODPBMZ.ps1

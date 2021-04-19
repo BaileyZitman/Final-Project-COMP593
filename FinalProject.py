@@ -26,7 +26,6 @@
 #*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*
 from http import client #needed to connect to the API
 import json #needed to manipulate the obtained Json object 
-#from pprint import pprint as pp #used to make json data more readable during early testing
 import sqlite3 #used for connecting to the sqlite database that will save the image information each day
 import datetime #used for adding time obtained from API
 import re #used to determine if .jpg or .png
@@ -78,13 +77,11 @@ output = [] #start the log file output array, its outputted as an array and read
 
 if command_for_script == "1": #if a new entry is to be made and a new image is to be downloaded
     json = Connection_and_json() #call function to get data for today
-    #output.append(json) #used to test the output and returned json object
     output.append("The data from the Nasa API was recieved sucessfully")
 
     date = datetime.datetime.now()
     time = date.time() #used later but this is the time image was obtained
     date = date.date()#used right below in the filepath. the date for the db will be added from the json object
-    #date = "2021-03-27" #used to test different dates
 
     if json["media_type"] == "image": #this makes sure no videos are appended to the database. In the case a video is availabe for the desired day and not an image, use last available image.
         if re.match(r".+.[Jj][pP][Gg]$", json["url"]): #checks to see if jpg because it could be png or even a video
@@ -122,7 +119,6 @@ if command_for_script == "1": #if a new entry is to be made and a new image is t
 
         keys = parse_json(json) #gets the keys returned in the object
         Copyright = 'No Copyright' #for public images
-        #output.append(str(keys))
         if (re.findall('copyright', str(keys))): #if the copyright key is found in the returned keys, add it. 
             Copyright = json["copyright"] #for copyrighted images, good idea to include. 
         
@@ -175,7 +171,6 @@ if command_for_script == "1": #if a new entry is to be made and a new image is t
 else: #if the image is to be retrieved and downloaded instead.
     date = datetime.datetime.now()
     date = date.date()
-    #date = "2021-04-15"
     connection_db = sqlite3.connect('PBMZ-db-FP.sqlite') #connect to the database. if one doesnt exist already create one
     db_cursor = connection_db.cursor() #create a cursor object to run the queries
     query = 'SELECT "File Path", "Image URL" FROM "Astronomy Image of The Day" WHERE "Date Image was Obtained"' + ' = "' + str(date) + '"'
