@@ -29,11 +29,11 @@ import json #needed to manipulate the obtained Json object
 import sqlite3 #used for connecting to the sqlite database that will save the image information each day
 import datetime #used for adding time obtained from API
 import re #used to determine if .jpg or .png
-import requests #used to obatin the image and save it to the file
 import os.path #used to check if the directory "/Saved Images" already exists 
 import os #used to create the directory "./Saved Images" if  doesnt exist- will store images of the day (script is set to run daily). also used to detrmine size of file
 import hashlib #used to get the images hash value to save to the database
 from sys import argv #used to indentify if image is to be appended and downloaded or just downloaded
+import urllib.request #used to obtained the url image and save to the ./Saved Images/ directory (replaced requests module with this one because this is deafault)
 
 def Connection_and_json(): #makes connection to nasa api and returns the json data
     connection = client.HTTPSConnection('api.nasa.gov', 443) #connection to BASE URL and type
@@ -89,10 +89,8 @@ if command_for_script == "1": #if a new entry is to be made and a new image is t
         elif re.match(r".+.[Pp][Nn][Gg]$", json["url"]):
             name_of_file = "PBMZ-AIOTD-" + json["date"] + ".png"
 
-        image_response = requests.get(json["url"]) #will fetch the url from the interwebs to assign the the file below
-        image_file = open("./Saved Images/" + name_of_file, "wb") #will create an empty file in the directory thats waiting for binary content
-        image_file.write(image_response.content) #writes the contents of the image_response (request) to the waiting file.
-        image_file.close() #close the file which is located in the directory "./Saved Files"
+        directory_of_file = "./Saved Images/" + name_of_file
+        save_image = urllib.request.urlretrieve(json["url"], directory_of_file)
 
         output.append("The image: ./Saved Images/" + name_of_file + " was saved sucessfully")
 
@@ -183,11 +181,9 @@ else: #if the image is to be retrieved and downloaded instead.
         name_of_file = "PBMZ-AIOTD-" + str(date) + ".jpg"
     elif re.match(r".+.[Pp][Nn][Gg]$", str(File_Path_location)):
         name_of_file = "PBMZ-AIOTD-" + str(date) + ".png"
-    
-    image_response = requests.get(File_URL) #will fetch the url from the interwebs to assign the the file below
-    image_file = open("./Saved Images/" + name_of_file, "wb") #will create an empty file in the directory thats waiting for binary content
-    image_file.write(image_response.content) #writes the contents of the image_response (request) to the waiting file.
-    image_file.close() #close the file which is located in the directory "./Saved Files"  
+ 
+    directory_of_file = "./Saved Images/" + name_of_file
+    save_image = urllib.request.urlretrieve(File_URL, directory_of_file)
 
     print(File_Path_location) #output file path back to powershell
     connection_db.close() #close the database. 

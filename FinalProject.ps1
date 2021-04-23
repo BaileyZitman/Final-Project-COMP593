@@ -24,7 +24,8 @@ if (Get-InstalledModule -Name "PSSQLite"){ #installs the reqiured module if not 
     Import-Module PSSQLite
 } else {
     Install-Module -Name PSSQLite -Force -Scope CurrentUser #used to query the database from powershell, also do queries in python but if dont need to run python script
-    Write-Output "The modile PSSQLite is required to run this script and has been downloaded automatically" 
+    Import-Module PSSQLite
+    Write-Output "The modile PSSQLite is required to run this script and has been downloaded and imported automatically" 
 }
 Function Connection_and_query{
     #the next few lines connects to the database and makes a query for TODAYS hash value. 
@@ -47,7 +48,7 @@ Function Change_background ([string]$image){ #changes background of host compute
 
 Function FilePath_to_Background ([string]$State, [string]$OutputStatement){ #used to take the filepath and call the python script and then use that output to call the call the change background function about and chnage the background
     #Below assigns the statements to an array for easy access base on when this function is called will output something different
-    $statements = ("No file matching the hash was found. Will start the FinalProject.py Script to obtain the image because it has not already been downloaded.", "No entry for this day can be found in the database. Will commence obtaining the image and create a new entry", "The directory './PBMZ-db-FP.sqlite' does not exist yet so will commense creation now and obtain the image of the day.")
+    $statements = ("No file matching the hash value returned for the current date was found. Will start the FinalProject.py Script to obtain the image because it has not already been downloaded.", "No entry for this day can be found in the database. Will commence obtaining the image and create a new entry", "The directory './PBMZ-db-FP.sqlite' does not exist yet so will commense creation now and obtain the image of the day.")
     Write-Host $statements[$OutputStatement]
     $Path = $(python .\FinalProject.py $State) #call the python script
     if (Test-Path "./temp.txt"){ #if the file exists read content, output it and then delete it. 
@@ -78,9 +79,9 @@ if (Test-Path -Path "./PBMZ-db-FP.sqlite"){ #test to make sure database exists, 
         $find_hash_second_directory = Get-ChildItem $directory_to_search -Recurse | Get-FileHash | Where-object -Property Hash -e -Value $connection_results #same as above but on user defined directory. if default was provided then on ./Saved Images
         if (($find_hash) -or ($find_hash_second_directory)){ #if a file was found in either directory with same hash use that file
             if ($find_hash.Path -eq $find_hash_second_directory.Path){ #if the paths are the same only output one
-                Write-Host "The file(s):" $find_hash.Path were located that contain the same hash as the current image of the day and will use one of the files instead #write-host doesnt add a \n automatically when not using quotes
+                Write-Host "The file:" $find_hash.Path was located that contains the same hash value as the current image of the day and will be used to change the background of the computer #write-host doesnt add a \n automatically when not using quotes
             } else {
-                Write-Host "The file(s):" $find_hash.Path $find_hash_second_directory.Path were located that contain the same hash as the current image of the day and will use one of the files instead #write-host doesnt add a \n automatically when not using quotes
+                Write-Host "The file:" $find_hash.Path $find_hash_second_directory.Path was located that contains the same hash value as the current image of the day and will be used to change the background of the computer #write-host doesnt add a \n automatically when not using quotes
             }
             if ($find_hash){ #if file that was found is in the default folder use that first, because mine script rules....jk...but it does
                 $change_background = Change_background -image $find_hash.Path #change background base on image found in todays directory instead of calling the python script becasue it is already downlaoded
