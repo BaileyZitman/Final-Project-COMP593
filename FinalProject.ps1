@@ -1,11 +1,14 @@
 #*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*
 # Description:
 #  This script will allow the user to change the background image of the computer to Nasa's Astronomy Image of the Day. This script works in conjuction with the script
-#  "FinalProject.py" to complete the objective and is called by the RunAPODPBMZ.ps1 script. This script will automatically start the python script if the image available for today is not already downloaded. Note: 
-#  the images for THIS script must be located in the directory called ".\Saved Images" to work properly. This script will search that directory plus anothor if selected
-#  for the images that are already downloaded. If the image is not found containing the hash in question the python script will activate and obtain the image. The Image
-#  data will be saved to a database called "PBMZ-db_FP.db" which will also be created in the CWD when the python script is FIRST run. On subsequent runs, the data will be
-#  appended to database instead. Note: This script uses command line parameters because it is automatically configure to run everyday at a specific time. 
+#  "FinalProject.py" to complete the objective and is called by the RunAPODPBMZ.ps1 script. This script will automatically start the python script if the image available
+#  for today is not already downloaded. Note: the images for THIS script must be located in the directory called ".\Saved Images" to work properly.
+#  This script will search that directory plus anothor if selected for the images that are already downloaded. If the image is not found containing the hash in 
+#  question the python script will activate and obtain the image. The Image data will be saved to a database called "PBMZ-db_FP.db" which will also be created in the CWD
+#  when the python script is FIRST run and it didn't return a video. On subsequent runs, the data will be appended to database instead. 
+#  Note: This script uses command line parameters because it has the ability to create a new entry or just use a previous entry to redownload an image. This is provided
+#  via the command line parameters and considered a "controlling" feature. If called by instelf, ensure either a 1 or 2 is specified based on the function you wish to 
+#  complete. 
 #
 # Usage
 #  . .\FinalProject.ps1 directorytosearch
@@ -14,14 +17,14 @@
 #  directorytosearch = This is the parameter to specify which additional directory to search (max 1). Enter the full path of the directory to search recursilvly, 
 #                      or enter "default" to search ./Saved Images twice (only outputs the path once though so not duplicating output)
 #
-#  For a detailed summary on functionality and usability please visit the "README.md" file in the main Github repository
+#  For a detailed summary on functionality and usability please visit the "README.md" file
 #
 # History
-#  For a detailed history summary vist the file "History.md" in the main Github repository 
+#  For a detailed history summary visit the file "History.md"
 #
 #*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*
 if (Get-InstalledModule -Name "PSSQLite"){ #installs the reqiured module if not already installed.
-    Import-Module PSSQLite
+    Import-Module PSSQLite -Force
 } else {
     Install-Module -Name PSSQLite -Force -Scope CurrentUser #used to query the database from powershell, also do queries in python but if dont need to run python script
     Import-Module PSSQLite
@@ -57,7 +60,7 @@ Function FilePath_to_Background ([string]$State, [string]$OutputStatement){ #use
         $python_out2 = $python_out1 -replace "\['", ""
         $python_out3 = $python_out2 -replace "', '", " "
         Write-Host $python_out3 #write the outout of the python script to the screen
-        Remove-Item -Path "./temp.txt" #delet the file that contained the temp above info
+        Remove-Item -Path "./temp.txt" #delete the file that contained the temp above info
     }
 
     $File_location = Get-ItemProperty FullName -Path $Path #take the half-@$$ string "./Saved Images/oshdbc...blah" to the full string for the background changer

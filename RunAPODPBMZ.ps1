@@ -72,7 +72,7 @@ if (-not($Occurrence -eq "Now")){ #only need to get time if not Now
 if ($Occurrence -eq "Now"){ #run the script from here without making a task for it. 
     $current_Directory = Get-Location 
     Start-Process -FilePath "Powershell.exe" -ArgumentList ". .\FinalProject.ps1 $additional_directory"  -WorkingDirectory $current_Directory #starts the process in a new terminal
-} else { #else if once but not now 
+} else { #else if once or Daily but not now 
     $create_task = Create_task -Time $Run_Time -Occurrence $Occurrence -Directory $additional_directory #schedule the task based on user input
     Write-Host $create_task -ForegroundColor "Green"
 }

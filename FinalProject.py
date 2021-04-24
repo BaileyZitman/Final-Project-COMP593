@@ -18,10 +18,10 @@
 # Paramaters
 #  1or2 = This is used to identify whether a new entry is to appended to the database[1] or if the image is to be downloaded only[2]
 #
-#  Note: For a detailed summary on functionality and usability please visit the "README.md" file in the main Github repository
+#  Note: For a detailed summary on functionality and usability please visit the "README.md" file
 #
 # History
-#  For a detailed history summary vist the file "History.md" in the main Github repository 
+#  For a detailed history summary visit the file "History.md"
 #
 #*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*#*-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-*
 from http import client #needed to connect to the API

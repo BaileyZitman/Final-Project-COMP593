@@ -16,23 +16,21 @@ This database will contain one table (for simplicity) called **Astronomy Image o
 9. Image Copyright Information (if applicable)
 
 ## Set-Up
-In order to achieve the objective without any complications please download the entire contents of the directory **Final-Project-COMP593** and do not modify the locations of any of the files. This will be provided as a .zip file, and contains the directory structure that is required for the script to function without errors. The additional directory **./Saved Images** found within, is mandatory and should contain an image called **default.jpg**. This file can be replaced with any .jpg file by the name of **default.jpg**. If the scripts are to be run without the executable file **RunMe.exe**, then ensure the PowerShell session used to start the script **RunAPODPBMZ.ps1**, has a CWD (Current Working directory) of the directory **Final-Project-COMP593**. If that is to much, simply execute the executable file and it will run the script without having to worry about the CWD of the PowerShell session. 
+In order to achieve the objective without any complications please download the entire contents of the directory **Final-Project-COMP593** and do not modify the locations of any of the files. This will be provided as a .zip file, and contains the directory structure that is required for the script to function without errors. The additional directory **./Saved Images** found within, is mandatory and should contain an image called **default.jpg**. This file can be replaced with any .jpg file by the name of **default.jpg**. Ensure the PowerShell session used to start the script **RunAPODPBMZ.ps1**, has a CWD (Current Working directory) of the directory **Final-Project-COMP593** (that of the scripts). 
 
 Below are a couple of screenshots showing the process to configure the application:
 1. ["This Image shows the downloaded .zip file](https://drive.google.com/file/d/1z4SiO3Sql6EaOrqk-DXsvGjrGE_DUcrv/view?usp=sharing)
 2. ["This Image shows the contents of the .zip file"](https://drive.google.com/file/d/1oZJZMDN_-tzKhT9AsK-IPH_bgDeV2J7H/view?usp=sharing)
 3. ["This Image shows the contents of the ./Saved Images directory within"](https://drive.google.com/file/d/1aVbqC6hPVLgtIrOgzoV-_8MZFlRkrcq4/view?usp=sharing)
 
+After the files have been unzipped and the scipts are ready to run the following command needs to be entered to allow the script to bypass any execution policy set in place for the current user: **Set-ExecutiuonPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force**. See [Screenshot](https://drive.google.com/file/d/1GR50op8zIL6dLXWnPPP_dgQqgbJmF6Yw/view?usp=sharing)
+
+Note: It is imperative that python is installed and configured to be assosiated with ".py" files and configured to be launchable through PowerShell directly. For example one should be able to run the below command to execute a python file in powershell "python fileName". See [Screenshot](https://drive.google.com/file/d/1byCb7ubeTDNzvNXZ_bcDMQ3p2JeJXo8J/view?usp=sharing)
+
 ## Functionality
-Included with the application is an executable file and three serperate scripts, working in tandom to complete the objective. The three scripts are: **RunAPODPBMZ.ps1**, **FinalProject.ps1** and **FinalProject.py**, two being PowerShell scripts and one being a python script. The executable file **RunMe.exe** is a wrapper around **RunAPODPBMZ.ps1** and can be used to achieve full functionality of the scripts without having to enter a PowerShell session to run **RunAPODPBMZ.ps1**. The executable file is not mandatory, but the three remaining scripts are. Each file, completes a seperate objective, and can be effectively executed individually to acheive just that objective without having to run the entire application. This section provides more detailed information about each script and the executable file. Ensuring the functionality of each script is clear and concise. 
+Included with the application are three serperate scripts, working in tandom to complete the objective. The three scripts are: **RunAPODPBMZ.ps1**, **FinalProject.ps1** and **FinalProject.py**, two being PowerShell scripts and one being a python script. All three are mandatory to achieve full functionality of the application. This section provides more detailed information about each script. Ensuring the functionality of each script is clear and concise. 
 
-To run the application, Please either run the executable file or run the PowerShell script, **RunAPODPBMZ.ps1** from a PowerShell session that has the current working directory of the same directory containing the script. 
-
-### RunMe.exe
-To run the executable, simply double click on it.
-
-This executable is an easy way to run the entire script without having to enter into any powershell sessions manually. Once executed, this executable starts the **RunAPODPBMZ.ps1** and allows the user to have access to the full functionality of the application. If run by itself, The executable starts the previously mentioned script and from there follows the same functionality of that script. 
-
+To run the application, Please either run the PowerShell script **RunAPODPBMZ.ps1**, from a PowerShell session that has the current working directory set as the same directory containing the script. You can choose to run each script individually to complete a part of the objective and the uses of this and each scripts functionality is described below.
 
 ### RunAPODPBMZ.ps1
 To run this script navigate to it's parent directory and enter: . .\RunAPODPBZ.ps1
