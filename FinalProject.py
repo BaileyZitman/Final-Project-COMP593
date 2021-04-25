@@ -36,7 +36,7 @@ from sys import argv #used to indentify if image is to be appended and downloade
 import urllib.request #used to obtained the url image and save to the ./Saved Images/ directory (replaced requests module with this one because this is deafault)
 
 def Connection_and_json(): #makes connection to nasa api and returns the json data
-    connection = client.HTTPSConnection('api.nasa.gov', 443) #connection to BASE URL and type
+    connection = client.HTTPSConnection('api.nasa.gov', 443) #connection to BASE URL and type-doesnt make actual connection 
     connection.request('GET', '/planetary/apod?api_key=sjs4hKLE3bgesXYphayaDhYNfuLVIJfNUOqC0Z6H') #make conenction with my key
     response = connection.getresponse() #get response
     json_image = response.read().decode() #decode response still not json just in json format
@@ -77,7 +77,7 @@ output = [] #start the log file output array, its outputted as an array and read
 
 if command_for_script == "1": #if a new entry is to be made and a new image is to be downloaded
     json = Connection_and_json() #call function to get data for today
-    output.append("The data from the Nasa API was recieved sucessfully")
+    output.append("The data from the Nasa API was recieved sucessfully.")
 
     date = datetime.datetime.now()
     time = date.time() #used later but this is the time image was obtained
@@ -92,7 +92,7 @@ if command_for_script == "1": #if a new entry is to be made and a new image is t
         directory_of_file = "./Saved Images/" + name_of_file
         save_image = urllib.request.urlretrieve(json["url"], directory_of_file)
 
-        output.append("The image: ./Saved Images/" + name_of_file + " was saved sucessfully")
+        output.append("The image: ./Saved Images/" + name_of_file + " was saved sucessfully.")
 
         File_Hash = get_hash(name_of_file) #get the files hash
         File_size = get_size(name_of_file) #gets the files size
@@ -147,7 +147,7 @@ if command_for_script == "1": #if a new entry is to be made and a new image is t
         db_cursor.execute(addDataQuery, Data_query) #executes the adding of the data
         connection_db.commit() #commites or saves the data so it will persists after the session closes
         connection_db.close() #closes the connection
-        output.append("The image was returned successfully and the data was saved to the database PBMZ-db_FP.sqlite")
+        output.append("The image was returned successfully and the data was saved to the database PBMZ-db_FP.sqlite.")
         write_output(str(output)) #creates, saves all of the info, and closes the temp file. (may not see unless only running this script by itself)
         print(File_Path) #this is captured by powerhsell as the images path used back in the powershell script. 
 
@@ -162,7 +162,7 @@ if command_for_script == "1": #if a new entry is to be made and a new image is t
             print(File_Path[0][0]) #return the first result, which will be the most recent image available
             connection_db.close() #closes the db conenction
         else: #use the default image if the directory doesnt exist already.  
-            output.append("The database does not exist and the current available data for the current day is a video and not an image. This script will work to its fullest extent on the next day an image available. A default image will be used instead")
+            output.append("The database does not exist and the current available data for the current day is a video and not an image. This script will work to its fullest extent on the next day an image available. A default image will be used instead.")
             write_output(str(output)) #write and close temp file
             print("./Saved Images/default.jpg") #output the path to the default image which must be located here
 
