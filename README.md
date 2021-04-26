@@ -3,16 +3,13 @@ This repository will contain the final project for the course
 
 
 ## Purpose
-The purpose of this script is to change the background image of the PC every day at a predetermined time to that of the Nasa Image of the day. The script will also append (or create a database if script has never ran) data and important information pertaining to the image to an sqlite database. The Nasa image of the day can be found [here](https://www.nasa.gov/multimedia/imagegallery/iotd.html) along with the previous images selected. This script will automatically activate at a predetermined time everyday and obtain the Nasa image of the day IF and only IF the image has not already been obtained, save to data to the database and then change the background photo of the PC.
+The purpose of this application, is to change the background of the computer to that of the Astronomy Image of the Day provided by NASA and log the information about the returned image to an SQLite database. This applciation will create the database and corresponding table, if not already present in the directory.
 
-This database will contain one table (for simplicity) and contain the following information: 
+This database will contain one table (for simplicity) called Astronomy Image of the Day and contain the following information about each Image returned:
+
 1. Date of Image
-2. Time of Image 
-3. Filename of Image
-4. Filesize of Image
-5. SHA-256 Hash of Image
 2. Date Image was Obtained
-3. Time Image was Obtained 
+3. Time Image was Obtained
 4. Filename of Image
 5. Filesize (Bytes) of Image
 6. SHA-256 Hash of Image
@@ -59,3 +56,4 @@ To run this script navigate to it's parent directory and enter: python FinalProj
 
 This script is invoked by the script **FInalProject.ps1** if there is no entry for the current date, the database doesnt exist, or there is an entry for the current date but the image doesnt exist in the searched directories. When invoked by the PowerShell script, it will be provided with either a 1 or a 2 to indicate the function it is to complete. If a 1 is passed to this script upon execution it indicates that there is no database or entry for the current date. In such a case, this script will make a connection to the NASA API containing the Astronomy Image of The Day and retrieve the image information. This will be appended to the database as a new entry or if the database doesnt exists, will be appended after the database and table are created. On the off chance the Image of the day is actually a video, the last available image (most recent) will be used as the background image for the current day. In the case when there is no database, or previous images to use and it is a video, a default image has been provided instead that will be used until the next available image is obtained. When being invoked and this script is provided with a 2, the PowerShell script indentified an entry for the current date but could not find an image that matches the hash of the image in the entry. In this situation, the python script will make an SQL query on the database for the current dates filepath and url. This will be used to reobtain the image and save it again. Whenever This script is called, a file is created called **./temp.txt** and it contains all of the output of this script. This will be read back to the PowerShell Terminal after this script is completed. This script also outputs the relative filepath of the image its saved back to the PowerShell script to be used as the background image. 
 
+When this script is run by itself, you need to indicate with a 1 or 2, which function you wish to complete. This script is only used to either, create a new database and table with a new entry, append a new entry to the existing database or to redownload the image for the current date. When not being invoked by the PowerShell script FinalProject.ps1 no background change will complete because that takes place in the PowerShell script. If there is no entry for the current date, or the database and its table doesn't exists already, this script will create them, obtain todays image, save the file, save the information and return the files relative path. If there is already an entry for the current date, when a 1 is provided a unique contstraint error will present itself. If a 2 is passed to the script, when being invoked by itself, the script will preform an SQL query for todays entry. If the database or table doesnt exists already an error will present itself. If there is no entry then nothing is returned and a different error will present itself. However, if there is an entry for the current date, and a 2 is passed to this script, the script will obtain the binary data again and redownload the image. If it already exists nothing happens (overwrites with same info), and if it didnt exist it does now.
