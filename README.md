@@ -7,12 +7,10 @@ The purpose of this script is to change the background image of the PC every day
 
 This database will contain one table (for simplicity) and contain the following information: 
 1. Date of Image
-<<<<<<< Updated upstream
 2. Time of Image 
 3. Filename of Image
 4. Filesize of Image
 5. SHA-256 Hash of Image
-=======
 2. Date Image was Obtained
 3. Time Image was Obtained 
 4. Filename of Image
@@ -60,5 +58,4 @@ If the script is run by itself, without being invoked by the script **RunAPODPBM
 To run this script navigate to it's parent directory and enter: python FinalProject.py "1or2"
 
 This script is invoked by the script **FInalProject.ps1** if there is no entry for the current date, the database doesnt exist, or there is an entry for the current date but the image doesnt exist in the searched directories. When invoked by the PowerShell script, it will be provided with either a 1 or a 2 to indicate the function it is to complete. If a 1 is passed to this script upon execution it indicates that there is no database or entry for the current date. In such a case, this script will make a connection to the NASA API containing the Astronomy Image of The Day and retrieve the image information. This will be appended to the database as a new entry or if the database doesnt exists, will be appended after the database and table are created. On the off chance the Image of the day is actually a video, the last available image (most recent) will be used as the background image for the current day. In the case when there is no database, or previous images to use and it is a video, a default image has been provided instead that will be used until the next available image is obtained. When being invoked and this script is provided with a 2, the PowerShell script indentified an entry for the current date but could not find an image that matches the hash of the image in the entry. In this situation, the python script will make an SQL query on the database for the current dates filepath and url. This will be used to reobtain the image and save it again. Whenever This script is called, a file is created called **./temp.txt** and it contains all of the output of this script. This will be read back to the PowerShell Terminal after this script is completed. This script also outputs the relative filepath of the image its saved back to the PowerShell script to be used as the background image. 
->>>>>>> Stashed changes
 
